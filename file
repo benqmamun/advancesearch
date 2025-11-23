@@ -1,0 +1,138 @@
+HTML Code
+----------------------------------------
+<div class="filter-row">
+    <!-- Input field -->
+   <select id="customer" class="select2-enhance"></select>
+
+   <input type="date" id="fromDate" placeholder="From Date">
+   <input type="date" id="toDate" placeholder="To Date">
+
+   <!-- Search button -->
+   <button type="button" class="search-btn" onclick="search()">
+    Search
+   </button>
+
+   <!-- Clear button -->
+   <button type="button" class="clear-btn" onclick="clearFilters()">
+      Clear
+   </button>
+
+</div>
+
+
+<script>
+// Initialize Select2
+$(function() {
+    $('.select2-enhance').select2({
+        placeholder: 'Select…',
+        allowClear: true
+    });
+});
+
+// SEARCH
+function search() {
+    $s('P20_CUSTOMER', $('#customer').val());
+    $s('P20_FROM', $('#fromDate').val());
+    $s('P20_TO', $('#toDate').val());
+
+
+    apex.region('customer_report').refresh();
+}
+
+// CLEAR FILTERS
+function clearFilters() {
+
+    // Reset form fields
+    $('#fromDate, #toDate').val('');
+    $('#customer').val(null).trigger('change');
+
+    // Clear APEX items
+    $s('P20_CUSTOMER', null);
+    $s('P20_FROM', null);
+    $s('P20_TO', null);
+
+    apex.region('customer_report').refresh();
+}
+</script>
+
+
+
+
+
+JavaScript File URLs
+----------------------------------------
+https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js
+
+
+Function and Global Variable Declaration
+----------------------------------------
+$("#customer").select2({
+  placeholder: "Select Username",
+  allowClear: true,
+  ajax: {
+    url: "wwv_flow.show",
+    dataType: "json",
+    delay: 250,
+    data: function (params) {
+      return {
+        p_request: "APPLICATION_PROCESS=PM_CUSTOMER",
+        p_flow_id: $v('pFlowId'),
+        p_flow_step_id: $v('pFlowStepId'),
+        p_instance: $v('pInstance'),
+        x01: params.term || ""
+      };
+    },
+    processResults: function (data) {
+      return {
+        results: data.items
+      };
+    }
+  }
+});
+
+
+CSS File URLs
+----------------------------------------
+https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css
+
+
+
+HTML Header
+----------------------------------------
+<style>
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    align-items: center;
+    font-size: 12px;
+    margin-top: 0;  /* FIXED */
+}
+.filter-row select,
+.filter-row input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 220px;
+}
+.filter-row button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+}
+.search-btn { background-color: #3674B5; }
+.clear-btn  { background-color: #ff5344; }
+
+
+</style>
