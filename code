@@ -136,3 +136,30 @@ HTML Header
 
 
 </style>
+
+AJAX
+--------------------------
+DECLARE
+  l_term VARCHAR2(200) := LOWER(NVL(apex_application.g_x01, ''));
+BEGIN
+  apex_json.open_object;
+  apex_json.open_array('items');
+
+  FOR r IN (
+      SELECT CUSTOMER_NO  AS id,
+             CUSTOMER_NAME AS text
+        FROM PM_CUSTOMER
+       WHERE l_term IS NULL
+          OR LOWER(CUSTOMER_NAME) LIKE '%' || l_term || '%'
+       ORDER BY CUSTOMER_NAME
+  )
+  LOOP
+    apex_json.open_object;
+    apex_json.write('id',   r.id);
+    apex_json.write('text', r.text);
+    apex_json.close_object;
+  END LOOP;
+
+  apex_json.close_array;
+  apex_json.close_object;
+END;
